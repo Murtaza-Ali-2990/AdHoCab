@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "678960122464",
+    "project_id": "adhocab-7ab3f",
+    "storage_bucket": "adhocab-7ab3f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:678960122464:android:e52dc5708d2579846ed105",
+        "android_client_info": {
+          "package_name": "com.example.adhocab"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "678960122464-tn6mqesoc8re2qhldkv7ubptooc4oiij.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6e805sk2ruYfJcl6Cbe4N0B3FT0Pft_8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "678960122464-tn6mqesoc8re2qhldkv7ubptooc4oiij.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
