@@ -1,5 +1,5 @@
-import 'package:adhocab/authentication/signIn/sign_in.dart';
 import 'package:adhocab/models/user_data.dart';
+import 'package:adhocab/screens/onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'loading_screen.dart';
@@ -11,7 +11,7 @@ class Wrapper extends StatelessWidget {
     print('User is ${user?.uid} and type is ${user?.type}');
 
     if (user?.uid == null) {
-      return SignIn();
+      return Onboarding();
     }
     if (user?.type == 'Customer') {
       return Text('Customer');

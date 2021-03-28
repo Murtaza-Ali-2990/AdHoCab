@@ -17,7 +17,6 @@ class _SignUpDriverState extends State<SignUpDriver> {
     if (loading) return Loading();
 
     return Scaffold(
-      backgroundColor: bgColor,
       body: Container(
         margin: EdgeInsets.only(top: 20.0),
         alignment: Alignment.center,

@@ -18,18 +18,12 @@ class _SignInState extends State<SignIn> {
     if (loading) return Loading();
 
     return Scaffold(
-      backgroundColor: bgColor,
       body: Container(
-        decoration: BoxDecoration(
-            image: DecorationImage(
-          image: AssetImage('assets/images/Onboarding.png'),
-          fit: BoxFit.cover,
-        )),
         margin: EdgeInsets.only(top: 20.0),
         alignment: Alignment.center,
         child: Column(
           children: [
-            HeadingStyle('AdHoCab'),
+            HeadingStyle('Log In'),
             SizedBox(height: 50.0),
             SizedBox(
               width: 400.0,
