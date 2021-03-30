@@ -90,8 +90,10 @@ class _SignUpDriverState extends State<SignUpDriver> {
         error = 2;
       else if (user == 'invalid-email')
         error = 3;
-      else
+      else {
         error = 0;
+        Navigator.of(context).pop('exit');
+      }
       if (error != 0) setState(() => loading = false);
     }
   }

@@ -84,9 +84,10 @@ class _SignInState extends State<SignIn> {
     );
   }
 
-  void _redirectToSignUp() {
-    Navigator.of(context)
+  void _redirectToSignUp() async {
+    final result = await Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => SignUpCustomer()));
+    if (result == 'exit') Navigator.of(context).pop();
   }
 
   Future<void> _verifyLogin() async {
@@ -101,8 +102,10 @@ class _SignInState extends State<SignIn> {
         error = 3;
       else if (user == 'user-not-found')
         error = 4;
-      else
+      else {
         error = 0;
+        Navigator.of(context).pop();
+      }
       if (error != 0) setState(() => loading = false);
     }
   }

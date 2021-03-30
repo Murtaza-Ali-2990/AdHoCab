@@ -76,9 +76,10 @@ class _SignUpCustomerState extends State<SignUpCustomer> {
     );
   }
 
-  void _redirectToSignUpDriver() {
-    Navigator.of(context)
+  void _redirectToSignUpDriver() async {
+    final result = await Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => SignUpDriver()));
+    if (result == 'exit') Navigator.of(context).pop('exit');
   }
 
   Future<void> _verifySignUp() async {
@@ -92,8 +93,10 @@ class _SignUpCustomerState extends State<SignUpCustomer> {
         error = 2;
       else if (user == 'invalid-email')
         error = 3;
-      else
+      else {
         error = 0;
+        Navigator.of(context).pop('exit');
+      }
       if (error != 0) setState(() => loading = false);
     }
   }
