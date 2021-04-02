@@ -17,7 +17,7 @@ class _Details extends State<DriverDetails> {
   Driver driver;
   _Details({this.driver, this.uid});
 
-  bool loading = false;
+  bool loading = false, aadhaar = false, license = false;
   final _key = GlobalKey<FormState>();
 
   TextEditingController dobController;
@@ -119,18 +119,26 @@ class _Details extends State<DriverDetails> {
                         ),
                         SizedBox(height: 8.0),
                         ElevatedButton.icon(
-                          icon: Icon(Icons.upload_file),
+                          icon: Icon(driver.drivingLicense == null
+                              ? Icons.upload_file
+                              : Icons.done),
                           label: ButtonLayout('Upload License'),
                           style: buttonStyle,
                           onPressed: () => _upload('License'),
                         ),
+                        if (license)
+                          Text('Upload License', style: errorTextStyle),
                         SizedBox(height: 8.0),
                         ElevatedButton.icon(
-                          icon: Icon(Icons.upload_file),
+                          icon: Icon(driver.aadhaarCard == null
+                              ? Icons.upload_file
+                              : Icons.done),
                           label: ButtonLayout('Upload Aadhaar Card'),
                           style: buttonStyle,
                           onPressed: () => _upload('Aadhaar Card'),
                         ),
+                        if (aadhaar)
+                          Text('Upload Aadhaar Card', style: errorTextStyle),
                         SizedBox(height: 30.0),
                         ElevatedButton.icon(
                           icon: Icon(Icons.update),
@@ -170,7 +178,7 @@ class _Details extends State<DriverDetails> {
   }
 
   Future<void> _saveDetails() async {
-    if (_key.currentState.validate()) {
+    if (_key.currentState.validate() && _checkUpload()) {
       setState(() => loading = true);
       dynamic result = await DatabaseService(uid: uid).setDriverDetails(driver);
       if (result != null && mounted)
@@ -193,5 +201,17 @@ class _Details extends State<DriverDetails> {
         driver.dob = picked;
         dobController.text = picked.toString();
       });
+  }
+
+  bool _checkUpload() {
+    if (driver.aadhaarCard == null)
+      setState(() => aadhaar = true);
+    else
+      setState(() => aadhaar = false);
+    if (driver.drivingLicense == null)
+      setState(() => license = true);
+    else
+      setState(() => license = false);
+    return !(aadhaar || license);
   }
 }

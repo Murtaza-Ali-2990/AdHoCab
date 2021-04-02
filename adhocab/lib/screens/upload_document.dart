@@ -29,8 +29,6 @@ class _Upload extends State<UploadDocument> {
   bool loading = false;
 
   Widget build(BuildContext context) {
-    if (loading) return loadingStyle;
-
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -42,9 +40,11 @@ class _Upload extends State<UploadDocument> {
               Container(
                 padding: EdgeInsets.all(5),
                 constraints: BoxConstraints(maxHeight: 500, maxWidth: 500),
-                child: url == null || url.isEmpty
-                    ? Image.network('https://i.imgur.com/sUFH1Aq.png')
-                    : Image.network(url),
+                child: loading
+                    ? loadingStyle
+                    : url == null || url.isEmpty
+                        ? Image.network('https://i.imgur.com/sUFH1Aq.png')
+                        : Image.network(url),
               ),
               SizedBox(height: 50),
               ElevatedButton.icon(
@@ -66,31 +66,39 @@ class _Upload extends State<UploadDocument> {
     final imagePicker = ImagePicker();
     PickedFile image;
 
-    await Permission.photos.request();
-    var permissionStatus = await Permission.photos.status;
+    try {
+      await Permission.photos.request();
+      var permissionStatus = await Permission.photos.status;
 
-    if (!permissionStatus.isGranted) {
-      print('Permission NOT Granted');
+      if (!permissionStatus.isGranted) {
+        print('Permission NOT Granted');
+        setState(() => loading = false);
+        return;
+      }
+
+      image = await imagePicker.getImage(source: ImageSource.gallery);
+
+      if (image != null) {
+        var file = File(image.path);
+        var snapshot = await firebaseStorage
+            .ref()
+            .child('$uid/$type')
+            .putFile(file)
+            .whenComplete(() => null);
+        var downloadUrl = await snapshot.ref.getDownloadURL();
+        setState(() => url = downloadUrl);
+        callback(url);
+      } else {
+        print('No Image Path Received');
+      }
+    } catch (exception) {
+      print(exception);
+      print('Access Denied');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              'Access Denied\nPlease Allow Access or Enable Access in App Settings')));
+    } finally {
       setState(() => loading = false);
-      return;
     }
-
-    image = await imagePicker.getImage(source: ImageSource.gallery);
-    var file = File(image.path);
-
-    if (image != null) {
-      var snapshot = await firebaseStorage
-          .ref()
-          .child('$uid/$type')
-          .putFile(file)
-          .whenComplete(() => null);
-      var downloadUrl = await snapshot.ref.getDownloadURL();
-      setState(() => url = downloadUrl);
-      callback(url);
-    } else {
-      print('No Image Path Received');
-    }
-
-    setState(() => loading = false);
   }
 }
