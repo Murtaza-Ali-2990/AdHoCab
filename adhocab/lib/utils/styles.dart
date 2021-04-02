@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 final mainColor = Color(0xFFFF9977);
 final bgColor = Color(0xFFFFBBAA);
@@ -21,8 +22,20 @@ final miniHeadingStyle = TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold);
 final buttonTextStyle = TextStyle(fontSize: 16.0, color: Colors.white);
 final errorTextStyle = TextStyle(fontSize: 16.0, color: Colors.red);
 
+final loadingStyle = SpinKitRotatingCircle(color: mainColor, size: 100.0);
+
 final buttonStyle =
     ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(mainColor));
+
+Widget detailsAppBar(String title) {
+  return AppBar(
+    title: Text(
+      title,
+      style: semiHeadingStyle,
+    ),
+    backgroundColor: mainColor,
+  );
+}
 
 class ButtonLayout extends StatelessWidget {
   final text;

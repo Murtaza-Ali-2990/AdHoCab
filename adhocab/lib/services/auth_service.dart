@@ -1,4 +1,8 @@
+import 'package:adhocab/models/customer.dart';
+import 'package:adhocab/models/driver.dart';
 import 'package:adhocab/models/user_data.dart';
+import 'package:adhocab/models/vehicle.dart';
+import 'package:adhocab/services/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -17,7 +21,16 @@ class AuthService {
       final user = (await _auth.createUserWithEmailAndPassword(
               email: email, password: password))
           .user;
-      user.updateProfile(displayName: type);
+      final databaseService = DatabaseService(uid: _auth.currentUser.uid);
+
+      if (type == 'Customer')
+        await databaseService.setCustomerDetails(Customer(email: email));
+      else {
+        await databaseService.setVehicleDetails(Vehicle());
+        await databaseService.setDriverDetails(Driver(email: email));
+      }
+
+      await user.updateProfile(displayName: type);
     } catch (e) {
       return e.code;
     }
