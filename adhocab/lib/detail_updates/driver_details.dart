@@ -1,6 +1,7 @@
 import 'package:adhocab/models/driver.dart';
 import 'package:adhocab/screens/upload_document.dart';
 import 'package:adhocab/services/database_service.dart';
+import 'package:adhocab/utils/loading_screen.dart';
 import 'package:adhocab/utils/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class _Details extends State<DriverDetails> {
     dobController = TextEditingController(text: driver.dob?.toString());
     print('Email is ${driver?.email}');
 
-    if (loading) return loadingStyle;
+    if (loading) return Loading();
 
     return Scaffold(
       backgroundColor: bgColor,

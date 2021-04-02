@@ -1,5 +1,6 @@
 import 'package:adhocab/models/customer.dart';
 import 'package:adhocab/services/database_service.dart';
+import 'package:adhocab/utils/loading_screen.dart';
 import 'package:adhocab/utils/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class _Details extends State<CustomerDetails> {
     dobController = TextEditingController(text: customer.dob?.toString());
     print('Email is ${customer?.email}');
 
-    if (loading) return loadingStyle;
+    if (loading) return Loading();
 
     return Scaffold(
       backgroundColor: bgColor,
