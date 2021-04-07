@@ -3,6 +3,8 @@
    <application
         android:label="adhocab"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyA6e805sk2ruYfJcl6Cbe4N0B3FT0Pft_8"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

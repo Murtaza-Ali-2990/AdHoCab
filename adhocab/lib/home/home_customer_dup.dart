@@ -1,11 +1,11 @@
-import 'dart:async';
-
+/*
 import 'package:adhocab/home/location_picker.dart';
 import 'package:adhocab/navigation_drawer/customer_navigation_drawer.dart';
 import 'package:adhocab/services/route_service.dart';
 import 'package:adhocab/utils/styles.dart';
+import "package:flutter_map/flutter_map.dart";
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import "package:latlong/latlong.dart";
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -14,24 +14,15 @@ class CustomerHome extends StatefulWidget {
 }
 
 class _Home extends State<CustomerHome> {
+  final home = LatLng(22.697442, 75.857239);
   LatLng sourceCoordinates, destinationCoordinates;
   String source, destination;
   int distance, travelTime;
 
   Map<String, dynamic> route;
-  Set<Marker> markers = {};
-  Set<Polyline> polylines = {};
-  List<LatLng> polylineCoordinates = [];
+  List<Marker> markers = [];
 
   bool _routeloading = false, _routeDisplay = false;
-
-  Completer<GoogleMapController> _controller = Completer();
-  GoogleMapController _mapsController;
-
-  static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(22.697442, 75.857239),
-    zoom: 13,
-  );
 
   TextEditingController sourceController = TextEditingController(text: '');
   TextEditingController destinationController = TextEditingController(text: '');
@@ -64,18 +55,18 @@ class _Home extends State<CustomerHome> {
       body: SafeArea(
         child: Stack(
           children: <Widget>[
-            GoogleMap(
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              compassEnabled: true,
-              mapType: MapType.normal,
-              initialCameraPosition: _kGooglePlex,
-              onMapCreated: (GoogleMapController controller) {
-                _mapsController = controller;
-                _controller.complete(controller);
-              },
-              markers: markers,
-              polylines: polylines,
+            FlutterMap(
+              options: new MapOptions(center: home, zoom: 13.0),
+              layers: [
+                new TileLayerOptions(
+                  urlTemplate: "https://api.tomtom.com/map/1/tile/basic/main/"
+                      "{z}/{x}/{y}.png?key=$apiKey",
+                  additionalOptions: {"apiKey": apiKey},
+                ),
+                MarkerLayerOptions(
+                  markers: markers,
+                ),
+              ],
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -120,7 +111,6 @@ class _Home extends State<CustomerHome> {
         sourceController.text = source;
         sourceCoordinates = LatLng(result['lat'], result['lon']);
         _addSourceDestinationMarkers();
-        _mapsController.moveCamera(CameraUpdate.newLatLng(sourceCoordinates));
       });
     } else {
       setState(() {
@@ -128,29 +118,30 @@ class _Home extends State<CustomerHome> {
         destinationController.text = destination;
         destinationCoordinates = LatLng(result['lat'], result['lon']);
         _addSourceDestinationMarkers();
-        _mapsController
-            .moveCamera(CameraUpdate.newLatLng(destinationCoordinates));
       });
     }
   }
 
   void _addSourceDestinationMarkers() {
     markers.clear();
-    polylineCoordinates.clear();
-    polylines.clear();
-
     _routeDisplay = false;
 
     if (sourceCoordinates != null)
       markers.add(Marker(
-        markerId: MarkerId('source'),
-        position: sourceCoordinates,
+        width: 80.0,
+        height: 80.0,
+        point: sourceCoordinates,
+        builder: (BuildContext context) =>
+            const Icon(Icons.location_on, size: 30.0, color: Colors.black),
       ));
 
     if (destinationCoordinates != null)
       markers.add(Marker(
-        markerId: MarkerId('destination'),
-        position: destinationCoordinates,
+        width: 80.0,
+        height: 80.0,
+        point: destinationCoordinates,
+        builder: (BuildContext context) =>
+            const Icon(Icons.location_on, size: 30.0, color: Colors.black),
       ));
   }
 
@@ -176,18 +167,16 @@ class _Home extends State<CustomerHome> {
     _addSourceDestinationMarkers();
 
     for (var latlng in route['coordinates']) {
-      polylineCoordinates.add(LatLng(latlng['latitude'], latlng['longitude']));
+      markers.add(Marker(
+        width: 80.0,
+        height: 80.0,
+        point: LatLng(latlng['latitude'], latlng['longitude']),
+        builder: (BuildContext context) =>
+            const Icon(Icons.circle, size: 10.0, color: Colors.red),
+      ));
     }
 
-    polylines.add(Polyline(
-      polylineId: PolylineId('route'),
-      visible: true,
-      points: polylineCoordinates,
-      width: 4,
-      color: Colors.blue,
-    ));
-
-    print(polylineCoordinates);
+    print(markers);
 
     setState(() {
       distance = route['distance'];
@@ -200,37 +189,23 @@ class _Home extends State<CustomerHome> {
   void showMenu() {
     showModalBottomSheet(
         isScrollControlled: true,
-        backgroundColor: Colors.transparent,
         context: context,
         builder: (builder) {
           return new Container(
-              height: 350.0,
-              decoration: new BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: new BorderRadius.only(
-                      topLeft: const Radius.circular(60.0),
-                      topRight: const Radius.circular(60.0))),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Column(
-                  children: [
-                    SizedBox(height: 5),
-                    SemiHeadingStyle('Book Ride'),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(width: 5),
-                        Text(
-                            'Distance: ${distance >= 1000 ? (distance / 1000).toStringAsFixed(1) : distance} ${distance >= 1000 ? 'km' : 'm'}'),
-                        Text(
-                            'Time: ${travelTime / 60 > 0 ? (travelTime / 60).toStringAsFixed(0) + ' min' : ''} ${travelTime % 60 > 0 ? (travelTime % 60).toString() + ' s' : ''}'),
-                        SizedBox(width: 5),
-                      ],
-                    ),
-                  ],
-                ),
-              ));
+            height: 350.0,
+            color: Colors.transparent, //could change this to Color(0xFF737373),
+            //so you don't have to change MaterialApp canvasColor
+            child: new Container(
+                decoration: new BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: new BorderRadius.only(
+                        topLeft: const Radius.circular(10.0),
+                        topRight: const Radius.circular(10.0))),
+                child: new Center(
+                  child: new Text("This is a modal sheet"),
+                )),
+          );
         });
   }
 }
+*/
