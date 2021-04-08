@@ -33,6 +33,7 @@ class _SignInState extends State<SignIn> {
                     children: [
                       TextFormField(
                         initialValue: username,
+                        keyboardType: TextInputType.emailAddress,
                         decoration:
                             textInputDecor.copyWith(hintText: 'Username'),
                         validator: (value) =>

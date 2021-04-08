@@ -33,6 +33,7 @@ class _SignUpCustomerState extends State<SignUpCustomer> {
                     children: [
                       TextFormField(
                         initialValue: username,
+                        keyboardType: TextInputType.emailAddress,
                         decoration:
                             textInputDecor.copyWith(hintText: 'Username'),
                         validator: (value) =>

@@ -7,15 +7,16 @@ final bgColor = Color(0xFFFFBBAA);
 final apiKey = 'Rf01sgkDlBo10y6SXBNfHJ5GzAG162Ta';
 
 final textInputDecor = InputDecoration(
+    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     hintText: '',
     fillColor: Colors.white,
     filled: true,
     enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: mainColor, width: 4.0),
+      borderSide: BorderSide(color: mainColor, width: 1.0),
       borderRadius: BorderRadius.all(Radius.circular(10.0)),
     ),
     focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: mainColor, width: 4.0),
+        borderSide: BorderSide(color: mainColor, width: 2.0),
         borderRadius: BorderRadius.all(Radius.circular(10.0))));
 
 final headingStyle = TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold);

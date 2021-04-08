@@ -141,28 +141,30 @@ class _Home extends State<CustomerHome> {
                       polylines: polylines,
                     );
                   }),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 5),
-                TextField(
-                  controller: sourceController,
-                  decoration: textInputDecor.copyWith(
-                    hintText: 'Enter the source location',
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextField(
+                    controller: sourceController,
+                    decoration: textInputDecor.copyWith(
+                      hintText: 'Enter the source location',
+                    ),
+                    onTap: () => _getLocation('Source'),
+                    readOnly: true,
                   ),
-                  onTap: () => _getLocation('Source'),
-                  readOnly: true,
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  controller: destinationController,
-                  decoration: textInputDecor.copyWith(
-                    hintText: 'Enter the destination location',
+                  SizedBox(height: 8),
+                  TextField(
+                    controller: destinationController,
+                    decoration: textInputDecor.copyWith(
+                      hintText: 'Enter the destination location',
+                    ),
+                    onTap: () => _getLocation('Destination'),
+                    readOnly: true,
                   ),
-                  onTap: () => _getLocation('Destination'),
-                  readOnly: true,
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -344,33 +346,30 @@ class _Home extends State<CustomerHome> {
               decoration: new BoxDecoration(
                   color: Colors.white,
                   borderRadius: new BorderRadius.only(
-                      topLeft: const Radius.circular(60.0),
-                      topRight: const Radius.circular(60.0))),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Column(
-                  children: [
-                    SizedBox(height: 5),
-                    SemiHeadingStyle('Book Ride'),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(width: 5),
-                        Text(
-                            'Distance: ${distance >= 1000 ? (distance / 1000).toStringAsFixed(1) : distance} ${distance >= 1000 ? 'km' : 'm'}'),
-                        Text(
-                            'Time: ${travelTime / 60 > 0 ? (travelTime / 60).toStringAsFixed(0) + ' min' : ''} ${travelTime % 60 > 0 ? (travelTime % 60).toString() + ' s' : ''}'),
-                        SizedBox(width: 5),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () => _streamCreated ? null : _bookRide(),
-                      child: ButtonLayout('Book Ride'),
-                    ),
-                  ],
-                ),
+                      topLeft: const Radius.circular(32.0),
+                      topRight: const Radius.circular(32.0))),
+              child: Column(
+                children: [
+                  SizedBox(height: 24),
+                  SemiHeadingStyle('Book Ride'),
+                  SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(width: 1),
+                      Text(
+                          'Distance: ${distance >= 1000 ? (distance / 1000).toStringAsFixed(1) : distance} ${distance >= 1000 ? 'km' : 'm'}'),
+                      Text(
+                          'Time: ${travelTime / 60 > 0 ? (travelTime / 60).toStringAsFixed(0) + ' min' : ''} ${travelTime % 60 > 0 ? (travelTime % 60).toString() + ' s' : ''}'),
+                      SizedBox(width: 1),
+                    ],
+                  ),
+                  SizedBox(height: 60),
+                  ElevatedButton(
+                    onPressed: () => _streamCreated ? null : _bookRide(),
+                    child: ButtonLayout('Book Ride'),
+                  ),
+                ],
               ));
         });
   }

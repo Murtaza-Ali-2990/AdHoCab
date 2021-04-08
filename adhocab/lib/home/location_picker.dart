@@ -29,28 +29,31 @@ class _Picker extends State<LocationPicker> {
     return Scaffold(
       body: Container(
         alignment: Alignment.topCenter,
-        child: Column(
-          children: [
-            SizedBox(height: 50),
-            TextFormField(
-              initialValue: pattern,
-              decoration: textInputDecor.copyWith(
-                hintText: 'Search for Location',
+        child: Padding(
+          padding: EdgeInsets.only(left: 8, right: 8, top: 48, bottom: 12),
+          child: Column(
+            children: [
+              TextFormField(
+                initialValue: pattern,
+                decoration: textInputDecor.copyWith(
+                  hintText: 'Search for Location',
+                ),
+                onChanged: (value) => setState(() => pattern = value),
               ),
-              onChanged: (value) => setState(() => pattern = value),
-            ),
-            ElevatedButton.icon(
-              icon: Icon(Icons.location_searching),
-              label: Text('Your Current Location'),
-              onPressed: () => _getCurrentLocation(),
-            ),
-            FutureBuilder(
-              future: pattern == null || pattern.isEmpty
-                  ? null
-                  : LocationAutoComplete.getSuggestions(pattern),
-              builder: _buildFuture,
-            ),
-          ],
+              SizedBox(height: 8),
+              ElevatedButton.icon(
+                icon: Icon(Icons.location_searching),
+                label: Text('Your Current Location'),
+                onPressed: () => _getCurrentLocation(),
+              ),
+              FutureBuilder(
+                future: pattern == null || pattern.isEmpty
+                    ? null
+                    : LocationAutoComplete.getSuggestions(pattern),
+                builder: _buildFuture,
+              ),
+            ],
+          ),
         ),
       ),
     );
