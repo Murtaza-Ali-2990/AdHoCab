@@ -87,6 +87,6 @@ class DriverWrapper extends StatelessWidget {
         uid: user.uid,
       );
 
-    return DriverHome();
+    return DriverHome(uid: user.uid);
   }
 }

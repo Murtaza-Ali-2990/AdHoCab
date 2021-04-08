@@ -1,3 +1,4 @@
+import 'package:adhocab/models/booking_details.dart';
 import 'package:adhocab/models/customer.dart';
 import 'package:adhocab/models/driver.dart';
 import 'package:adhocab/models/vehicle.dart';
@@ -11,6 +12,8 @@ class DatabaseService {
       FirebaseFirestore.instance.collection('Customer');
   final CollectionReference driverRef =
       FirebaseFirestore.instance.collection('Driver');
+  final CollectionReference locationRef =
+      FirebaseFirestore.instance.collection('AvailableDrivers');
 
   Stream<Customer> get customer {
     return customerRef.doc(uid).snapshots().map(_getCustomer);
@@ -65,6 +68,11 @@ class DatabaseService {
     );
   }
 
+  Future<Driver> getDriverDetails() async {
+    DocumentSnapshot doc = await driverRef.doc(uid).get();
+    return _getDriver(doc);
+  }
+
   Future setDriverDetails(Driver driver) async {
     try {
       await driverRef.doc(uid).set({
@@ -105,13 +113,109 @@ class DatabaseService {
 
   Future setVehicleDetails(Vehicle vehicle) async {
     try {
-      return driverRef.doc(uid).collection('Vehicle').doc('Vehicle').set({
+      await driverRef.doc(uid).collection('Vehicle').doc('Vehicle').set({
         'registration': vehicle.registration,
         'vehicleNo': vehicle.vehicleNo,
         'type': vehicle.type,
         'seats': vehicle.seats,
         'insurance': vehicle.insurance,
       });
+    } catch (error) {
+      print(error.toString());
+      return error.toString();
+    }
+  }
+
+  Future setCurrentLocation(GeoPoint geoPoint) async {
+    try {
+      await locationRef.doc(uid).set({
+        'driverLocation': geoPoint,
+      }, SetOptions(merge: true));
+    } catch (error) {
+      print(error.toString());
+      return error.toString();
+    }
+  }
+
+  Future setBookingDetails(BookingDetails bookingDetails) async {
+    try {
+      await locationRef.doc(uid).set({
+        'sourceLocation': bookingDetails.sourceLocation,
+        'source': bookingDetails.source,
+        'destinationLocation': bookingDetails.destinationLocation,
+        'destination': bookingDetails.destination,
+        'customerName': bookingDetails.customerName,
+        'customerPhone': bookingDetails.customerPhone,
+        'distance': bookingDetails.distance,
+        'time': bookingDetails.time,
+        'cost': bookingDetails.cost,
+        'pickup': bookingDetails.pickup,
+        'drop': bookingDetails.drop,
+      }, SetOptions(merge: true));
+    } catch (error) {
+      print(error.toString());
+      return error.toString();
+    }
+  }
+
+  Stream<BookingDetails> get bookingDetails {
+    return locationRef.doc(uid).snapshots().map(_getBookingDetails);
+  }
+
+  BookingDetails _getBookingDetails(DocumentSnapshot snapshot) {
+    return BookingDetails(
+      driverLocation: snapshot.data()['driverLocation'],
+      sourceLocation: snapshot.data()['sourceLocation'],
+      source: snapshot.data()['source'],
+      destinationLocation: snapshot.data()['destinationLocation'],
+      destination: snapshot.data()['destination'],
+      customerName: snapshot.data()['customerName'],
+      customerPhone: snapshot.data()['customerPhone'],
+      distance: snapshot.data()['distance'],
+      time: snapshot.data()['time'],
+      cost: snapshot.data()['cost'],
+      pickup: snapshot.data()['pickup'],
+      drop: snapshot.data()['drop'],
+    );
+  }
+
+  Future removeDriver() async {
+    try {
+      await locationRef.doc(uid).delete();
+    } catch (error) {
+      print(error.toString());
+      return error.toString();
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getCabs() async {
+    try {
+      var result = await locationRef.get();
+      return result.docs.map((e) {
+        return {'id': e.id, 'bookingDetails': _getBookingDetails(e)};
+      }).toList();
+    } on Exception catch (e) {
+      print(e);
+      return [];
+    }
+  }
+
+  Future setPickup(bool pickup) async {
+    try {
+      await locationRef.doc(uid).set({
+        'pickup': pickup,
+      }, SetOptions(merge: true));
+    } catch (error) {
+      print(error.toString());
+      return error.toString();
+    }
+  }
+
+  Future setDrop(bool drop) async {
+    try {
+      await locationRef.doc(uid).set({
+        'drop': drop,
+      }, SetOptions(merge: true));
     } catch (error) {
       print(error.toString());
       return error.toString();

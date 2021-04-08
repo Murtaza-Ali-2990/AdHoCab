@@ -1,13 +1,20 @@
 import 'dart:async';
 
 import 'package:adhocab/home/location_picker.dart';
+import 'package:adhocab/models/booking_details.dart';
+import 'package:adhocab/models/customer.dart';
 import 'package:adhocab/navigation_drawer/customer_navigation_drawer.dart';
+import 'package:adhocab/payment/payment.dart';
+import 'package:adhocab/services/database_service.dart';
 import 'package:adhocab/services/route_service.dart';
+import 'package:adhocab/utils/loading_screen.dart';
 import 'package:adhocab/utils/styles.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CustomerHome extends StatefulWidget {
   _Home createState() => _Home();
@@ -17,17 +24,26 @@ class _Home extends State<CustomerHome> {
   LatLng sourceCoordinates, destinationCoordinates;
   String source, destination;
   int distance, travelTime;
+  double cost;
+  BookingDetails bookingDetails = BookingDetails();
+
+  DatabaseService databaseService;
 
   Map<String, dynamic> route;
   Set<Marker> markers = {};
   Set<Polyline> polylines = {};
   List<LatLng> polylineCoordinates = [];
 
-  bool _routeloading = false, _routeDisplay = false;
+  bool _routeloading = false,
+      _routeDisplay = false,
+      _streamCreated = false,
+      _rideComplete = false,
+      _pickup = false,
+      _drop = false,
+      _routeSet = false,
+      _alreadySet = false;
 
-  Completer<GoogleMapController> _controller = Completer();
   GoogleMapController _mapsController;
-
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(22.697442, 75.857239),
     zoom: 13,
@@ -64,19 +80,67 @@ class _Home extends State<CustomerHome> {
       body: SafeArea(
         child: Stack(
           children: <Widget>[
-            GoogleMap(
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              compassEnabled: true,
-              mapType: MapType.normal,
-              initialCameraPosition: _kGooglePlex,
-              onMapCreated: (GoogleMapController controller) {
-                _mapsController = controller;
-                _controller.complete(controller);
-              },
-              markers: markers,
-              polylines: polylines,
-            ),
+            if (!_streamCreated)
+              GoogleMap(
+                myLocationEnabled: true,
+                myLocationButtonEnabled: true,
+                compassEnabled: true,
+                mapType: MapType.normal,
+                initialCameraPosition: _kGooglePlex,
+                onMapCreated: (GoogleMapController controller) {
+                  _mapsController = controller;
+                },
+                markers: markers,
+                polylines: polylines,
+              )
+            else
+              StreamBuilder<BookingDetails>(
+                  stream: databaseService.bookingDetails,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      print(snapshot.error);
+                      return loadingStyle;
+                    }
+
+                    if (snapshot.hasData &&
+                        snapshot.data.customerName != null) {
+                      bookingDetails = snapshot.data;
+                      _pickup = bookingDetails.pickup;
+                      _drop = bookingDetails.drop;
+
+                      print(bookingDetails.customerName);
+
+                      _setDriverMarker(bookingDetails.driverLocation);
+
+                      if (_pickup && !_alreadySet) {
+                        _routeSet = false;
+                        _alreadySet = true;
+                      }
+
+                      if (_drop) _rideCompleted();
+
+                      if (!_pickup && !_routeSet) {
+                        _setRoute(snapshot.data.driverLocation,
+                            snapshot.data.sourceLocation);
+                      } else if (!_drop && !_routeSet) {
+                        _setRoute(snapshot.data.sourceLocation,
+                            snapshot.data.destinationLocation);
+                      }
+                    }
+
+                    return GoogleMap(
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: true,
+                      compassEnabled: true,
+                      mapType: MapType.normal,
+                      initialCameraPosition: _kGooglePlex,
+                      onMapCreated: (GoogleMapController controller) {
+                        _mapsController = controller;
+                      },
+                      markers: markers,
+                      polylines: polylines,
+                    );
+                  }),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -104,6 +168,27 @@ class _Home extends State<CustomerHome> {
         ),
       ),
     );
+  }
+
+  _setDriverMarker(GeoPoint geoPoint) {
+    markers.clear();
+
+    markers.add(Marker(
+        markerId: MarkerId('driver'),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        position: LatLng(geoPoint.latitude, geoPoint.longitude)));
+
+    if (sourceCoordinates != null)
+      markers.add(Marker(
+        markerId: MarkerId('source'),
+        position: sourceCoordinates,
+      ));
+
+    if (destinationCoordinates != null)
+      markers.add(Marker(
+        markerId: MarkerId('destination'),
+        position: destinationCoordinates,
+      ));
   }
 
   Future<void> _getLocation(String type) async {
@@ -192,8 +277,59 @@ class _Home extends State<CustomerHome> {
     setState(() {
       distance = route['distance'];
       travelTime = route['travelTime'];
+      cost = (distance * 100).toDouble() / 11.5;
       _routeloading = false;
       _routeDisplay = true;
+    });
+  }
+
+  Future<void> _setRoute(GeoPoint source, GeoPoint destination) async {
+    polylineCoordinates.clear();
+    polylines.clear();
+
+    LatLng sourceCor = LatLng(source.latitude, source.longitude);
+    LatLng destinationCor = LatLng(destination.latitude, destination.longitude);
+    var result = await RouteService.getRoute(sourceCor, destinationCor);
+
+    for (var latlng in result['coordinates']) {
+      polylineCoordinates.add(LatLng(latlng['latitude'], latlng['longitude']));
+    }
+
+    polylines.add(Polyline(
+      polylineId: PolylineId('route'),
+      visible: true,
+      points: polylineCoordinates,
+      width: 4,
+      color: Colors.blue,
+    ));
+
+    setState(() {
+      _routeSet = true;
+    });
+  }
+
+  Future<void> _rideCompleted() async {
+    markers.clear();
+    polylineCoordinates.clear();
+    polylines.clear();
+
+    sourceController.clear();
+    destinationController.clear();
+
+    sourceCoordinates = null;
+    destinationCoordinates = null;
+
+    source = null;
+    destination = null;
+
+    setState(() {
+      _routeloading = false;
+      _routeDisplay = false;
+      _streamCreated = false;
+      _pickup = false;
+      _drop = false;
+      _routeSet = false;
+      _alreadySet = false;
     });
   }
 
@@ -228,9 +364,41 @@ class _Home extends State<CustomerHome> {
                         SizedBox(width: 5),
                       ],
                     ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () => _streamCreated ? null : _bookRide(),
+                      child: ButtonLayout('Book Ride'),
+                    ),
                   ],
                 ),
               ));
         });
+  }
+
+  Future<void> _bookRide() async {
+    Map<String, dynamic> result =
+        await Navigator.of(context).push(MaterialPageRoute(
+            builder: (buildContext) => Payment(
+                  customer: Provider.of<Customer>(context),
+                  source: source,
+                  destination: destination,
+                  sourceCor: GeoPoint(
+                      sourceCoordinates.latitude, sourceCoordinates.longitude),
+                  destinationCor: GeoPoint(destinationCoordinates.latitude,
+                      destinationCoordinates.longitude),
+                  distance: distance,
+                  time: travelTime,
+                  cost: cost,
+                )));
+    if (result == null || result.isEmpty) {
+      return;
+    }
+
+    print(result);
+
+    setState(() {
+      databaseService = DatabaseService(uid: result['driverID']);
+      _streamCreated = true;
+    });
   }
 }
