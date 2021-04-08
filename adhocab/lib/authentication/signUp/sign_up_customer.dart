@@ -23,7 +23,7 @@ class _SignUpCustomerState extends State<SignUpCustomer> {
         alignment: Alignment.center,
         child: Column(
           children: [
-            HeadingStyle('Sign Up as a Customer'),
+            Text('Sign Up as a Customer', style: semiHeadingStyle),
             SizedBox(height: 50.0),
             SizedBox(
               width: 400.0,
@@ -68,9 +68,10 @@ class _SignUpCustomerState extends State<SignUpCustomer> {
               ),
             ),
             SizedBox(height: 20.0),
-            if (error == 1) ErrorTextStyle('E-mail already in use'),
-            if (error == 2) ErrorTextStyle('Weak Password'),
-            if (error == 3) ErrorTextStyle('Invalid Email Format'),
+            if (error == 1)
+              Text('E-mail already in use', style: errorTextStyle),
+            if (error == 2) Text('Weak Password', style: errorTextStyle),
+            if (error == 3) Text('Invalid Email Format', style: errorTextStyle),
           ],
         ),
       ),

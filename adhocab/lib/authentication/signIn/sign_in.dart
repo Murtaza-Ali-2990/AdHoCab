@@ -19,14 +19,15 @@ class _SignInState extends State<SignIn> {
 
     return Scaffold(
       body: Container(
-        margin: EdgeInsets.only(top: 20.0),
+        margin: EdgeInsets.only(top: 24),
         alignment: Alignment.center,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            HeadingStyle('Log In'),
+            Text('Log In', style: semiHeadingStyle),
             SizedBox(height: 50.0),
-            SizedBox(
-              width: 400.0,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
               child: Form(
                   key: _key,
                   child: Column(
@@ -54,31 +55,28 @@ class _SignInState extends State<SignIn> {
                   )),
             ),
             SizedBox(height: 30.0),
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton.icon(
-                  icon: Icon(
-                    Icons.login,
-                    color: Colors.white,
-                  ),
-                  label: ButtonLayout('Log In'),
+                ElevatedButton(
+                  child: ButtonLayout('Log In'),
                   style: buttonStyle,
                   onPressed: _verifyLogin,
                 ),
-                SizedBox(width: 30.0),
+                SizedBox(height: 24),
                 ElevatedButton(
-                  style: buttonStyle,
                   child: ButtonLayout('Sign Up'),
+                  style: buttonStyle,
                   onPressed: _redirectToSignUp,
                 ),
               ],
             ),
             SizedBox(height: 20.0),
-            if (error == 1) ErrorTextStyle('E-mail is Invalid'),
-            if (error == 2) ErrorTextStyle('Wrong Password. Please try again.'),
-            if (error == 3) ErrorTextStyle('Weak Password'),
-            if (error == 4) ErrorTextStyle('User not Found'),
+            if (error == 1) Text('E-mail is Invalid', style: errorTextStyle),
+            if (error == 2)
+              Text('Wrong Password. Please try again.', style: errorTextStyle),
+            if (error == 3) Text('Weak Password', style: errorTextStyle),
+            if (error == 4) Text('User not Found', style: errorTextStyle),
           ],
         ),
       ),

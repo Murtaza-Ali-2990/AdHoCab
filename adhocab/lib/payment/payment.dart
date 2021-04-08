@@ -64,7 +64,7 @@ class _Payment extends State<Payment> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: SemiHeadingStyle('Payment'),
+        title: Text('Payment', style: semiHeadingStyle),
       ),
       body: Container(
         margin: EdgeInsets.all(5),

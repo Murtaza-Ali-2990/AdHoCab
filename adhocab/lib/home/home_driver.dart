@@ -71,7 +71,7 @@ class _Home extends State<DriverHome> {
       ),
       drawer: NavigationDrawerDriver(),
       appBar: AppBar(
-        title: SemiHeadingStyle('Home'),
+        title: Text('Home', style: semiHeadingStyle),
       ),
       body: StreamBuilder<BookingDetails>(
           stream: databaseService.bookingDetails,
@@ -206,7 +206,7 @@ class _Home extends State<DriverHome> {
                 child: Column(
                   children: [
                     SizedBox(height: 5),
-                    SemiHeadingStyle('Ride Details'),
+                    Text('Ride Details', style: semiHeadingStyle),
                     SizedBox(height: 10),
                     if (!_pickup)
                       TextButton(

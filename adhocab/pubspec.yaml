@@ -67,6 +67,16 @@ flutter:
   assets:
     - assets/images/Onboarding.png
 
+  fonts:
+    - family: Monoton
+      fonts:
+        - asset: fonts/Monoton-Regular.ttf
+    - family: Raleway
+      fonts:
+        - asset: fonts/Raleway-Regular.ttf
+        - asset: fonts/Raleway-Italic.ttf
+          style: italic
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

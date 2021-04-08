@@ -5,7 +5,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 class Loading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: bgColor,
-        body: SpinKitRotatingCircle(color: mainColor, size: 100.0));
+      backgroundColor: bgColor,
+      body: SpinKitRotatingCircle(color: mainColor, size: 100.0),
+    );
   }
 }

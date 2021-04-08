@@ -76,7 +76,7 @@ class _Home extends State<CustomerHome> {
             )),
       ),
       drawer: NavigationDrawerCustomer(),
-      appBar: AppBar(title: SemiHeadingStyle('Home')),
+      appBar: AppBar(title: Text('Home', style: semiHeadingStyle)),
       body: SafeArea(
         child: Stack(
           children: <Widget>[
@@ -351,7 +351,7 @@ class _Home extends State<CustomerHome> {
               child: Column(
                 children: [
                   SizedBox(height: 24),
-                  SemiHeadingStyle('Book Ride'),
+                  Text('Book Ride', style: semiHeadingStyle),
                   SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -33,7 +33,7 @@ class _Details extends State<VehicleDetails> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              HeadingStyle('Enter your Details'),
+              Text('Enter your Details', style: headingStyle),
               SizedBox(height: 50.0),
               SizedBox(
                 width: 400.0,
