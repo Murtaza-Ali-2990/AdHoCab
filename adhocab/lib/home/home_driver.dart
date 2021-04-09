@@ -83,10 +83,6 @@ class _Home extends State<DriverHome> {
               return Loading();
             }
 
-            if (driverLocation != null && _mapsController != null)
-              _mapsController
-                  .animateCamera(CameraUpdate.newLatLng(driverLocation));
-
             if (snapshot.hasData && snapshot.data.customerName != null) {
               _active = true;
               bookingDetails = snapshot.data;
@@ -108,9 +104,11 @@ class _Home extends State<DriverHome> {
               if (!_pickup && !_routeSet) {
                 _setRoute(
                     snapshot.data.driverLocation, snapshot.data.sourceLocation);
+                _routeSet = true;
               } else if (!_drop && !_routeSet) {
                 _setRoute(snapshot.data.sourceLocation,
                     snapshot.data.destinationLocation);
+                _routeSet = true;
               }
             }
 

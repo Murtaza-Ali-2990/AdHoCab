@@ -121,9 +121,11 @@ class _Home extends State<CustomerHome> {
                       if (!_pickup && !_routeSet) {
                         _setRoute(snapshot.data.driverLocation,
                             snapshot.data.sourceLocation);
+                        _routeDisplay = false;
                       } else if (!_drop && !_routeSet) {
                         _setRoute(snapshot.data.sourceLocation,
                             snapshot.data.destinationLocation);
+                        _routeDisplay = false;
                       }
                     }
 
@@ -313,6 +315,7 @@ class _Home extends State<CustomerHome> {
     markers.clear();
     polylineCoordinates.clear();
     polylines.clear();
+    route.clear();
 
     sourceController.clear();
     destinationController.clear();
