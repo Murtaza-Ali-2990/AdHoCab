@@ -1,5 +1,6 @@
 import 'package:adhocab/models/booking_details.dart';
 import 'package:adhocab/services/database_service.dart';
+import 'package:adhocab/utils/loading_screen.dart';
 import 'package:adhocab/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -62,6 +63,8 @@ class _Payment extends State<Payment> {
   String driverID;
 
   Widget build(BuildContext context) {
+    if (_loading) Loading();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Payment', style: semiHeadingStyle),
@@ -70,9 +73,43 @@ class _Payment extends State<Payment> {
         margin: EdgeInsets.all(5),
         child: Column(
           children: [
+            Text('Customer Name: ${customer.name}', style: miniHeadingStyle),
+            SizedBox(height: 20),
+            Text('Customer Phone No: ${customer.phone}',
+                style: miniHeadingStyle),
+            SizedBox(height: 20),
+            Text('From: $source', style: miniHeadingStyle),
+            SizedBox(height: 20),
+            Text('To: $destination', style: miniHeadingStyle),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(width: 1),
+                Text(
+                    'Distance: ${distance >= 1000 ? (distance / 1000).toStringAsFixed(1) : distance} ${distance >= 1000 ? 'km' : 'm'}',
+                    style: miniHeadingStyle),
+                Text(
+                    'Time: ${time / 60 > 0 ? (time / 60).toStringAsFixed(0) + ' min' : ''} ${time % 60 > 0 ? (time % 60).toString() + ' s' : ''}',
+                    style: miniHeadingStyle),
+                SizedBox(width: 1),
+              ],
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(width: 1),
+                Text('Cost: Rs. ${cost.toStringAsFixed(2)}',
+                    style: miniHeadingStyle),
+                SizedBox(width: 1),
+              ],
+            ),
+            SizedBox(height: 40),
             ElevatedButton(
-              onPressed: () => _loading ? null : _paymentDone(),
-              child: _loading ? loadingStyle : ButtonLayout('Pay'),
+              onPressed: () => _paymentDone(),
+              child: ButtonLayout('Pay'),
+              style: buttonStyle,
             ),
           ],
         ),
@@ -82,9 +119,6 @@ class _Payment extends State<Payment> {
 
   Future<void> _paymentDone() async {
     setState(() => _loading = true);
-    await Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => AcknowledgePayment(),
-    ));
 
     DatabaseService databaseService = DatabaseService();
     var cabList = await databaseService.getCabs();
@@ -102,6 +136,10 @@ class _Payment extends State<Payment> {
       setState(() => _loading = false);
       return;
     }
+
+    await Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => AcknowledgePayment(),
+    ));
 
     databaseService = DatabaseService(uid: driverID);
     var setResult = await databaseService.setBookingDetails(BookingDetails(

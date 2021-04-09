@@ -163,6 +163,7 @@ class DatabaseService {
   }
 
   BookingDetails _getBookingDetails(DocumentSnapshot snapshot) {
+    if (snapshot.data() == null) return BookingDetails();
     return BookingDetails(
       driverLocation: snapshot.data()['driverLocation'],
       sourceLocation: snapshot.data()['sourceLocation'],

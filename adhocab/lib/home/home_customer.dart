@@ -7,7 +7,6 @@ import 'package:adhocab/navigation_drawer/customer_navigation_drawer.dart';
 import 'package:adhocab/payment/payment.dart';
 import 'package:adhocab/services/database_service.dart';
 import 'package:adhocab/services/route_service.dart';
-import 'package:adhocab/utils/loading_screen.dart';
 import 'package:adhocab/utils/styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -279,7 +278,7 @@ class _Home extends State<CustomerHome> {
     setState(() {
       distance = route['distance'];
       travelTime = route['travelTime'];
-      cost = (distance * 100).toDouble() / 11.5;
+      cost = (distance).toDouble() / 155.7 + 10;
       _routeloading = false;
       _routeDisplay = true;
     });
@@ -358,9 +357,21 @@ class _Home extends State<CustomerHome> {
                     children: [
                       SizedBox(width: 1),
                       Text(
-                          'Distance: ${distance >= 1000 ? (distance / 1000).toStringAsFixed(1) : distance} ${distance >= 1000 ? 'km' : 'm'}'),
+                          'Distance: ${distance >= 1000 ? (distance / 1000).toStringAsFixed(1) : distance} ${distance >= 1000 ? 'km' : 'm'}',
+                          style: miniHeadingStyle),
                       Text(
-                          'Time: ${travelTime / 60 > 0 ? (travelTime / 60).toStringAsFixed(0) + ' min' : ''} ${travelTime % 60 > 0 ? (travelTime % 60).toString() + ' s' : ''}'),
+                          'Time: ${travelTime / 60 > 0 ? (travelTime / 60).toStringAsFixed(0) + ' min' : ''} ${travelTime % 60 > 0 ? (travelTime % 60).toString() + ' s' : ''}',
+                          style: miniHeadingStyle),
+                      SizedBox(width: 1),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(width: 1),
+                      Text('Cost: Rs. ${cost.toStringAsFixed(2)}',
+                          style: miniHeadingStyle),
                       SizedBox(width: 1),
                     ],
                   ),
@@ -368,6 +379,7 @@ class _Home extends State<CustomerHome> {
                   ElevatedButton(
                     onPressed: () => _streamCreated ? null : _bookRide(),
                     child: ButtonLayout('Book Ride'),
+                    style: buttonStyle,
                   ),
                 ],
               ));

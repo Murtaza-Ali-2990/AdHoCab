@@ -205,23 +205,68 @@ class _Home extends State<DriverHome> {
                 alignment: Alignment.topCenter,
                 child: Column(
                   children: [
-                    SizedBox(height: 5),
+                    SizedBox(height: 10),
                     Text('Ride Details', style: semiHeadingStyle),
+                    SizedBox(height: 20),
+                    if (bookingDetails.customerName != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(width: 1),
+                          Text('${bookingDetails.customerName}',
+                              style: miniHeadingStyle),
+                          Text('${bookingDetails.customerPhone}',
+                              style: miniHeadingStyle),
+                          SizedBox(width: 1),
+                        ],
+                      ),
+                    if (bookingDetails.customerName != null)
+                      SizedBox(height: 10),
+                    if (bookingDetails.customerName != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(width: 1),
+                          Text(
+                              'Distance: ${bookingDetails.distance >= 1000 ? (bookingDetails.distance / 1000).toStringAsFixed(1) : bookingDetails.distance} ${bookingDetails.distance >= 1000 ? 'km' : 'm'}',
+                              style: miniHeadingStyle),
+                          Text(
+                              'Time: ${bookingDetails.time / 60 > 0 ? (bookingDetails.time / 60).toStringAsFixed(0) + ' min' : ''} ${bookingDetails.time % 60 > 0 ? (bookingDetails.time % 60).toString() + ' s' : ''}',
+                              style: miniHeadingStyle),
+                          SizedBox(width: 1),
+                        ],
+                      ),
+                    if (bookingDetails.customerName != null)
+                      SizedBox(height: 10),
+                    if (bookingDetails.customerName != null)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(width: 1),
+                          Text(
+                              'Cost: Rs. ${bookingDetails.cost.toStringAsFixed(2)}',
+                              style: miniHeadingStyle),
+                          SizedBox(width: 1),
+                        ],
+                      ),
                     SizedBox(height: 10),
                     if (!_pickup)
                       TextButton(
                         onPressed: () => _onPickup(builder),
                         child: Text('Pickup'),
+                        style: buttonStyle,
                       )
                     else if (!_drop)
                       TextButton(
                         onPressed: () => _onDrop(builder),
                         child: Text('Drop'),
+                        style: buttonStyle,
                       )
                     else
                       TextButton(
                         onPressed: () => _finishRide(builder),
                         child: Text('Exit'),
+                        style: buttonStyle,
                       )
                   ],
                 ),
@@ -262,6 +307,7 @@ class _Home extends State<DriverHome> {
       _pickup = false;
       _routeSet = false;
       _markersSet = false;
+      bookingDetails = BookingDetails();
     });
     Navigator.pop(context);
   }
