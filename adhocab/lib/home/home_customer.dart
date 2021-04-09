@@ -121,11 +121,11 @@ class _Home extends State<CustomerHome> {
                       if (!_pickup && !_routeSet) {
                         _setRoute(snapshot.data.driverLocation,
                             snapshot.data.sourceLocation);
-                        _routeDisplay = false;
+                        _routeSet = true;
                       } else if (!_drop && !_routeSet) {
                         _setRoute(snapshot.data.sourceLocation,
                             snapshot.data.destinationLocation);
-                        _routeDisplay = false;
+                        _routeSet = true;
                       }
                     }
 
@@ -135,38 +135,37 @@ class _Home extends State<CustomerHome> {
                       compassEnabled: true,
                       mapType: MapType.normal,
                       initialCameraPosition: _kGooglePlex,
-                      onMapCreated: (GoogleMapController controller) {
-                        _mapsController = controller;
-                      },
+                      onMapCreated: (GoogleMapController controller) {},
                       markers: markers,
                       polylines: polylines,
                     );
                   }),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextField(
-                    controller: sourceController,
-                    decoration: textInputDecor.copyWith(
-                      hintText: 'Enter the source location',
+            if (!_streamCreated)
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextField(
+                      controller: sourceController,
+                      decoration: textInputDecor.copyWith(
+                        hintText: 'Enter the source location',
+                      ),
+                      onTap: () => _getLocation('Source'),
+                      readOnly: true,
                     ),
-                    onTap: () => _getLocation('Source'),
-                    readOnly: true,
-                  ),
-                  SizedBox(height: 8),
-                  TextField(
-                    controller: destinationController,
-                    decoration: textInputDecor.copyWith(
-                      hintText: 'Enter the destination location',
+                    SizedBox(height: 8),
+                    TextField(
+                      controller: destinationController,
+                      decoration: textInputDecor.copyWith(
+                        hintText: 'Enter the destination location',
+                      ),
+                      onTap: () => _getLocation('Destination'),
+                      readOnly: true,
                     ),
-                    onTap: () => _getLocation('Destination'),
-                    readOnly: true,
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -316,6 +315,7 @@ class _Home extends State<CustomerHome> {
     polylineCoordinates.clear();
     polylines.clear();
     route.clear();
+    _mapsController.dispose();
 
     sourceController.clear();
     destinationController.clear();

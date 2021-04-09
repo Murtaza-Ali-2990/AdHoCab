@@ -207,17 +207,12 @@ class _Home extends State<DriverHome> {
                     Text('Ride Details', style: semiHeadingStyle),
                     SizedBox(height: 20),
                     if (bookingDetails.customerName != null)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(width: 1),
-                          Text('${bookingDetails.customerName}',
-                              style: miniHeadingStyle),
-                          Text('${bookingDetails.customerPhone}',
-                              style: miniHeadingStyle),
-                          SizedBox(width: 1),
-                        ],
-                      ),
+                      Text('${bookingDetails.customerName}',
+                          style: miniHeadingStyle),
+                    SizedBox(height: 10),
+                    if (bookingDetails.customerName != null)
+                      Text('${bookingDetails.customerPhone}',
+                          style: miniHeadingStyle),
                     if (bookingDetails.customerName != null)
                       SizedBox(height: 10),
                     if (bookingDetails.customerName != null)
