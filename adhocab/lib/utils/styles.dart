@@ -5,7 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 final mainColor = Color(0xFFFF9977);
 final bgColor = Color(0xFFFFBBAA);
 
-final apiKey = 'Rf01sgkDlBo10y6SXBNfHJ5GzAG162Ta';
+final apiKey = 'ANDROID_API_KEY';
 
 final textInputDecor = InputDecoration(
   contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
